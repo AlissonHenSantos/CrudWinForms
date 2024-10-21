@@ -48,7 +48,20 @@ namespace SistemaCadastro
 
         private void Sistema_Load(object sender, EventArgs e)
         {
-         
+
+            listaCBGeneros();
+            clear();
+            
+        }
+
+        public void listaCBGeneros()
+        {
+            ConectaBanco con = new ConectaBanco();
+            DataTable tabelaDados = new DataTable();
+            tabelaDados = con.listaGeneros();
+            cbGenero.DataSource = tabelaDados;
+            cbGenero.DisplayMember = "genero";
+            cbGenero.ValueMember = "idgenero";
         }
 
 
@@ -80,9 +93,31 @@ namespace SistemaCadastro
         {
           
         }
+        public void clear()
+        {
+            txtnome.Clear();
+            txtranking.Clear();
+            cbGenero.Text = "";
+            txtintegrantes.Clear();
+        }
 
         private void BtnConfirmaCadastro_Click(object sender, EventArgs e)
         {
+            ConectaBanco conection = new ConectaBanco();
+            Banda newBanda = new Banda();
+
+            newBanda.Nome = txtnome.Text;
+            newBanda.Integrantes = Convert.ToInt32(txtintegrantes.Text);
+            newBanda.Genero = Convert.ToInt32( cbGenero.SelectedValue.ToString());
+            newBanda.Ranking = Convert.ToInt32(txtranking.Text);
+
+             bool retorno = conection.insereBanda(newBanda);
+
+            if (!retorno) {
+                MessageBox.Show(conection.mensagem);
+            }
+
+            clear();
 
         }
     }
