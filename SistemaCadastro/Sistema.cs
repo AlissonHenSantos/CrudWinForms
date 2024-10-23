@@ -51,6 +51,8 @@ namespace SistemaCadastro
 
             listaCBGeneros();
             clear();
+            listaBandas();
+            listaAlteraGenero();
             
         }
 
@@ -63,23 +65,60 @@ namespace SistemaCadastro
             cbGenero.DisplayMember = "genero";
             cbGenero.ValueMember = "idgenero";
         }
+        public void listaAlteraGenero()
+        {
+            ConectaBanco con = new ConectaBanco();
+            DataTable tabelaDados = new DataTable();
+            tabelaDados = con.listaGeneros();
+            cbAlteraGenero.DataSource = tabelaDados;
+            cbAlteraGenero.DisplayMember = "genero";
+            cbAlteraGenero.ValueMember = "idgenero";
+        }
 
 
 
 
         private void txtBusca_TextChanged(object sender, EventArgs e)
         {
-  
+            (dgBandas.DataSource as DataTable).DefaultView.RowFilter = string.Format("nome like '{0}%'", txtBusca.Text);
         }
 
         private void btnRemoveBanda_Click(object sender, EventArgs e)
         {
-           
+            int linha = dgBandas.CurrentRow.Index;
+            int id = Convert.ToInt32(dgBandas.Rows[linha].Cells["idbandas"].Value.ToString());
+            DialogResult resp = MessageBox.Show("Tem certeza que deseja excluir?",
+                "Remove Banda", MessageBoxButtons.OKCancel);
+
+            if (resp == DialogResult.OK)
+            {
+                ConectaBanco con = new ConectaBanco();
+
+                bool retorno = con.deletaBanda(id);
+                if (retorno == true)
+                {
+                    MessageBox.Show("banda deletada com sucesso");
+                    listaBandas();
+                }
+                else
+                {
+                    MessageBox.Show(con.mensagem);
+                }
+            }
         }
 
         private void btnAlterar_Click(object sender, EventArgs e)
         {
-            
+            int linha = dgBandas.CurrentRow.Index;
+            int id = Convert.ToInt32(dgBandas.Rows[linha].Cells["idbandas"].Value.ToString());
+            ConectaBanco con = new ConectaBanco();
+            Banda b = new Banda();
+
+            txtAlteraNome.Text = dgBandas.Rows[linha].Cells["nome"].Value.ToString();
+            cbAlteraGenero.DisplayMember = dgBandas.Rows[linha].Cells["genero"].Value.ToString();
+            txtAlteraIntegrantes.Text = dgBandas.Rows[linha].Cells["integrantes"].Value.ToString();
+
+
         }
 
          private void btnConfirmaAlteracao_Click(object sender, EventArgs e)
@@ -99,6 +138,7 @@ namespace SistemaCadastro
             txtranking.Clear();
             cbGenero.Text = "";
             txtintegrantes.Clear();
+            txtnome.Focus();
         }
 
         private void BtnConfirmaCadastro_Click(object sender, EventArgs e)
@@ -118,6 +158,47 @@ namespace SistemaCadastro
             }
 
             clear();
+            listaBandas();
+
+        }
+        public void listaBandas()
+        {
+            ConectaBanco con = new ConectaBanco();
+            DataTable dt = new DataTable();
+            dt = con.listaBandas();
+            dgBandas.DataSource = dt;
+            dgBandas.Columns["idbandas"].Visible = false;
+        }
+
+        private void dgBandas_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+            
+        }
+
+        private void cbAlteraGenero_SelectedIndexChanged(object sender, EventArgs e)
+        {
+           
+
+        }
+
+        private void txtAlteraNome_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtAlteraIntegrantes_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtAlteraRanking_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tabAlterar_Click(object sender, EventArgs e)
+        {
 
         }
     }
